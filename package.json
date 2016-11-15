@@ -1,0 +1,35 @@
+{
+  "name": "extraccionDatos",
+  "version": "1.0.0",
+  "description": "Permite extraer los datos desde diferentes repositorios",
+  "main": "testSips.js",
+  "dependencies": {
+    "jsdoc": "^3.4.0",
+    "mongodb": "^2.2.11",
+    "mssql": "^3.3.0",
+    "request": "^2.78.0",
+    "typescript": "^2.0.6",
+    "typings": "^1.5.0",
+    "xml2json": "^0.10.0"
+  },
+  "devDependencies": {
+    "@types/node": "^6.0.46"
+  },
+  "scripts": {
+    "node": "node ./testSips.js",
+    "postinstall": "typings install",
+    "tsc": "tsc",
+    "tsc:w": "tsc -w",
+    "typings": "typings"
+  },
+  "author": "Subsecretaría de Salud de Neuquen",
+  "license": "GNU",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andes/extraccionDatos.git"
+  },
+  "bugs": {
+    "url": "https://github.com/andes/extraccionDatos/issues"
+  },
+  "homepage": "https://github.com/andes/extraccionDatos#readme"
+}
