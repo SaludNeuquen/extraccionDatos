@@ -81,7 +81,7 @@ servicio.obtenerDatosips(100000,400000)
 
                            console.log('Error al guardar Pacientes', err)
 
-                           // servMongo.guardarLog({ "id": pacientesSips['idPaciente'], "Error": err.toString(), "Fecha": Date.now() })
+                           // servMongo.guardarLog({ "idPacienteSips": pacientesSips['idPaciente'], "Error": err.toString(), "Fecha": Date.now() })
                            //     .then((respuesta => {
                            //         console.log('Guardar Log', 'Error al guardar paciente');
                            //     }))

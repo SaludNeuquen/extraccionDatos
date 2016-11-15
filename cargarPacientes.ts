@@ -18,12 +18,30 @@ servMongo.getPacientes().then((resultado) => {
     //     });
     // });
     console.log(resultado[0]);
-    servicio.cargarUnPacienteAndes(resultado[0])
+    var paciente;
+    paciente = resultado[0];
+    servicio.cargarUnPacienteAndes(paciente)
         .then((rta) => {
-            console.log('Pacientes Guardados');
+            console.log('Paciente Guardado');
+            servMongo.guardarLogSips({ "idPacienteSips": paciente['idPaciente'], "migrado": true, "Fecha": Date.now() })
+                .then((respuesta => {
+                    console.log('Guardar Log', 'Se guarda log del paciente');
+                }))
+                .catch((err => {
+                    console.log('Error al guardar log', paciente['idPaciente'], err);
+                }))
         })
         .catch((err) => {
-            console.error('Error**:' + err)
+            console.error('Error**:' + err);
+            servMongo.guardarLogSips({ "idPacienteSips": paciente['idPaciente'], "migrado": false,"Error": err.toString(), "Fecha": Date.now() })
+                .then((respuesta => {
+                    console.log('Guardar Log', 'Se guarda el paciente');
+                }))
+                .catch((err => {
+                    console.log('Error al guardar log de error', paciente['idPaciente'], err);
+                }))
+
+
         });
 })
     .catch((err) => {

@@ -313,6 +313,25 @@ export class servicioMongo {
         });
     }
 
+    guardarLogSips(log) {
+        var url = config.urlMigraSips;
+        return new Promise((resolve, reject) => {
+            mongodb.MongoClient.connect(url, function(err, db) {
+                db.collection("logSips").insertOne(log, function(err, item) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(item);
+                    }
+
+                });
+
+                db.close();
+            });
+
+        });
+    }
+
     actualizarLocalidades() {
 
         var url = config.urlMongoAndes;
