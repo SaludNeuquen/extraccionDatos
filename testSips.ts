@@ -7,7 +7,7 @@ var servicio = new servicioSips();
 var servMongo = new servicioMongo();
 //console.log(libString.obtenerConsonante('Roa', 3));
 
-servicio.obtenerDatosips(100000,400000)
+servicio.obtenerDatosips(600001,800000)
     .then((resultado) => {
         if (resultado == null) {
             console.log('No encontrado');
@@ -72,7 +72,7 @@ servicio.obtenerDatosips(100000,400000)
 
                 obtenerPacientes
                     .then((lista => {
-                        servMongo.guardarPacientes(lista)
+                        servMongo.guardarPacientes(lista,"pacienteSips")
                        .then((res => {
                            //console.log('Guardar Paciente', paciente["idPaciente"]);
                            console.log('Guardar Pacientes');

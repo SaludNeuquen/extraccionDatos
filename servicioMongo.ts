@@ -234,13 +234,13 @@ export class servicioMongo {
         db.close();
     }
 
-    guardarPacientes(pacientes) {
-        var url = config.urlMigraSips;
+    guardarPacientes(pacientes, coleccion: string) {
+        var url = config.urlMigracion;
         return new Promise((resolve, reject) => {
             mongodb.MongoClient.connect(url, function(err, db) {
                 console.log('Total Pacientes', pacientes.length);
                 pacientes.forEach(paciente => {
-                    db.collection("paciente").insertOne(paciente, function(err, item) {
+                    db.collection(coleccion).insertOne(paciente, function(err, item) {
                         if (err) {
                             reject(err);
                         } else {
@@ -265,11 +265,12 @@ export class servicioMongo {
                         reject(err);
                     } else {
                         resolve(item);
+                        db.close();
                     }
 
                 });
 
-                db.close();
+
             });
 
         });
@@ -294,11 +295,11 @@ export class servicioMongo {
         });
     }
 
-    guardarLog(log) {
-        var url = config.urlMigraSips;
+    guardarLog(coleccion: string,log) {
+        var url = config.urlMigracion;
         return new Promise((resolve, reject) => {
             mongodb.MongoClient.connect(url, function(err, db) {
-                db.collection("logMigraSips").insertOne(log, function(err, item) {
+                db.collection(coleccion).insertOne(log, function(err, item) {
                     if (err) {
                         reject(err);
                     } else {

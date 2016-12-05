@@ -4,6 +4,7 @@ import * as config from './config';
 var servicio = new servicioSisa();
 
 
+
 servicio.getSisaCiudadano('32588311', config.usuarioSisa, config.passwordSisa)
     .then((resultado) => {
         if (resultado == null) {

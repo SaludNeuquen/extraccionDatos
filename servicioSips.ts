@@ -4,7 +4,6 @@ import {libString} from './libString'
 //import {IPaciente} from './interfaces/IPaciente';
 
 
-
 export class servicioSips {
 
     obtenerDatosips(inicio: number, fin: number) {
@@ -25,27 +24,27 @@ export class servicioSips {
                 // Puede ser una consulta a una vista que tenga toda la información
                 new sql.Request()
                     .input('inicio', sql.VarChar(20), inicio.toString())
-                    .input('fin',sql.VarChar(20), fin.toString())
+                    .input('fin', sql.VarChar(20), fin.toString())
                     .query(config.consultaPaciente).then(function(recordset) {
-                    //console.dir(recordset);
-                    //console.log(recordset.length);
-                    resolve([recordset]);
+                        //console.dir(recordset);
+                        //console.log(recordset.length);
+                        resolve([recordset]);
 
-                }).catch(function(err) {
-                    // ... query error checks
-                    console.log("Error de conexión");
-                    reject(err);
-                });
+                    }).catch(function(err) {
+                        // ... query error checks
+                        console.log("Error de conexión");
+                        reject(err);
+                    });
 
             })
         })
 
     }
 
-    obtenerFecha(fechaStr){
-      var numbers = fechaStr.match(/\d+/g);
-      var date = new Date(numbers[2], numbers[1]-1, numbers[0]);
-      return date;
+    obtenerFecha(fechaStr) {
+        var numbers = fechaStr.match(/\d+/g);
+        var date = new Date(numbers[2], numbers[1] - 1, numbers[0]);
+        return date;
 
     }
 
@@ -113,51 +112,54 @@ export class servicioSips {
         paciente["direccion"] = [];
         domicilio = {};
         ubicacion = {};
-        domicilio.valor ="";
-        if (registroSips.calle){
-          domicilio.valor = registroSips.calle + ' ';
-          if (registroSips.numero){
-            domicilio.valor +=  registroSips.numero + ' ' ;
-          }
+        domicilio.valor = "";
+        if (registroSips.calle) {
+            if (registroSips.calle.trim() != "NO TIENE NOMBRE") {
+                domicilio.valor = registroSips.calle + ' ';
+            }
 
-          if (registroSips.piso){
-            domicilio.valor += 'PISO: '+registroSips.piso + ' ';
-          }
+            if (registroSips.numero) {
+                domicilio.valor += registroSips.numero + ' ';
+            }
 
-          if (registroSips.dpto){
-            domicilio.valor += 'DPTO: '+registroSips.dpto + ' ';
-          }
+            if (registroSips.piso) {
+                domicilio.valor += 'PISO: ' + registroSips.piso + ' ';
+            }
+
+            if (registroSips.dpto) {
+                domicilio.valor += 'DPTO: ' + registroSips.dpto + ' ';
+            }
         }
 
 
-        if (registroSips.manzana){
-          domicilio.valor += 'MZ: '+ registroSips.manzana + ' ';
+        if (registroSips.manzana) {
+            domicilio.valor += 'MZ: ' + registroSips.manzana + ' ';
         }
 
-        if (registroSips.lote){
-          domicilio.valor += 'LT: '+registroSips.lote + ' ';
+        if (registroSips.lote) {
+            domicilio.valor += 'LT: ' + registroSips.lote + ' ';
         }
 
-        if (registroSips.parcela){
-          domicilio.valor += 'PARCELA: '+registroSips.parcela;
+        if (registroSips.parcela) {
+            domicilio.valor += 'PARCELA: ' + registroSips.parcela;
         }
 
         domicilio.valor = domicilio.valor.trim();
         if (registroSips.codigoPostal)
-        domicilio.codigoPostal = registroSips.codigoPostal.trim();
+            domicilio.codigoPostal = registroSips.codigoPostal.trim();
 
-        domicilio.ubicacion= {};
-        domicilio.ubicacion.localidad ="";
-        if (registroSips.idLocalidad >= 3){
-          domicilio.ubicacion.localidad = libString.toTitleCase(registroSips.nombreLocalidad.trim());
+        domicilio.ubicacion = {};
+        domicilio.ubicacion.localidad = "";
+        if (registroSips.idLocalidad >= 3) {
+            domicilio.ubicacion.localidad = libString.toTitleCase(registroSips.nombreLocalidad.trim());
         }
         domicilio.ubicacion.provincia = "";
-        if (registroSips.idProvinciaDomicilio >= 1){
-          domicilio.ubicacion.provincia = libString.toTitleCase(registroSips.nombreProvincia.trim());
+        if (registroSips.idProvinciaDomicilio >= 1) {
+            domicilio.ubicacion.provincia = libString.toTitleCase(registroSips.nombreProvincia.trim());
         }
         domicilio.ubicacion.pais = "";
-        if (registroSips.idProvinciaDomicilio >= 1){
-          domicilio.ubicacion.pais = libString.toTitleCase(registroSips.nombrePais.trim());
+        if (registroSips.idProvinciaDomicilio >= 1) {
+            domicilio.ubicacion.pais = libString.toTitleCase(registroSips.nombrePais.trim());
         }
 
         //domicilio.ubicacion = ubicacion;
@@ -191,10 +193,10 @@ export class servicioSips {
             paciente["fechaNacimiento"] = "";
         }
 
-        if (registroSips.fechaDefuncion && registroSips.fechaDefuncion!='01/01/1900') {
+        if (registroSips.fechaDefuncion && registroSips.fechaDefuncion != '01/01/1900') {
             //var fechaFac = new Date(registroSips.fechaDefuncion);
             var fechaFac = this.obtenerFecha(registroSips.fechaDefuncion);
-                paciente["fechaFallecimiento"] = fechaFac.toJSON();
+            paciente["fechaFallecimiento"] = fechaFac.toJSON();
         }
 
 
@@ -220,25 +222,25 @@ export class servicioSips {
 
     }
 
-    crearClaveSN(paciente){
+    crearClaveSN(paciente) {
 
-     var fecha;
-     var anioNacimiento="1900";
-     var doc ="";
-     if (paciente["fechaNacimiento"]){
-         fecha = paciente["fechaNacimiento"].split("-");
-         anioNacimiento = fecha[0].toString();
-     }
+        var fecha;
+        var anioNacimiento = "1900";
+        var doc = "";
+        if (paciente["fechaNacimiento"]) {
+            fecha = paciente["fechaNacimiento"].split("-");
+            anioNacimiento = fecha[0].toString();
+        }
 
-     if (paciente["documento"]){
-         doc = paciente["documento"].substr(0,4);
-     }
+        if (paciente["documento"]) {
+            doc = paciente["documento"].substr(0, 4);
+        }
 
 
-      var clave = libString.obtenerConsonante(paciente.apellido,3) + libString.obtenerConsonante(paciente.nombre,2) +
-                  anioNacimiento + doc;
+        var clave = libString.obtenerConsonante(paciente.apellido, 3) + libString.obtenerConsonante(paciente.nombre, 2) +
+            anioNacimiento + doc;
 
-      return clave;
+        return clave;
 
 
     }
