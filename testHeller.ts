@@ -34,7 +34,8 @@ servicio.obtenerDatosHeller(1, 50000)
                         pacienteHeller = servicio.formatearDatosHeller(registro);
                         //Se buscan las localidades y las provincias
                         var provincia = provincias.find((p) => { return libString.makePattern(pacienteHeller.direccion[0].ubicacion.provincia).test(p.nombre) });
-                        var localidad = localidades.find((p) => { return libString.getCleanedString(pacienteHeller.direccion[0].ubicacion.localidad) == (libString.getCleanedString(p.nombre)) });
+                        //var localidad = localidades.find((p) => { return libString.getCleanedString(pacienteHeller.direccion[0].ubicacion.localidad) == (libString.getCleanedString(p.nombre)) });
+                        var localidad = localidades.find((p) => { return (libString.getCleanedString(pacienteHeller.direccion[0].ubicacion.localidad) == (libString.getCleanedString(p.nombre)) && (p.provincia.nombre == provincia.nombre)) });
                         if (provincia) {
                             pacienteHeller.direccion[0].ubicacion.provincia = { _id: provincia._id, id: provincia._id, nombre: provincia.nombre };
                         }

@@ -1,13 +1,14 @@
 /// <reference path="typings/index.d.ts" />
 import * as sql from 'mssql';
-import * as parser from 'xml2json';
 import * as https from 'https';
+var to_json = require('xmljson').to_json;
+
 
 
 
 export class servicioSisa {
 
-    getSisaCiudadano(nroDocumento, usuario, clave) {
+    getSisaCiudadano(nroDocumento, usuario, clave, sexo?: string) {
         /**
          * Capítulo 5.2.2 - Ficha del ciudadano
          * Se obtienen los datos desde Sisa
@@ -16,33 +17,47 @@ export class servicioSisa {
          */
         // options for GET
         //Agregar a la consulta el sexo para evitar el problema de dni repetidos
-
         var datosParseados;
-        var jsonData = '';
+        var xml = '' ;
         var organizacion = new Object();
+        var pathSisa = '/sisa/services/rest/cmdb/obtener?nrodoc=' + nroDocumento + '&usuario=' + usuario + '&clave=' + clave;
+
+        if (sexo) {
+            pathSisa = '/sisa/services/rest/cmdb/obtener?nrodoc=' + nroDocumento + '&sexo=' + sexo + '&usuario=' + usuario + '&clave=' + clave;
+        }
+
         var optionsgetmsg = {
             host: 'sisa.msal.gov.ar', // nombre del dominio // (no http/https !)
             port: 443,
-            path: '/sisa/services/rest/cmdb/obtener?nrodoc=' + nroDocumento + '&usuario=' + usuario + '&clave=' + clave, //'/sisa/services/rest/puco/' + nroDocumento,
-            //'/sisa/services/rest/puco/' + nroDocumento,
-            method: 'GET' // do GET
+            path: pathSisa, //'/sisa/services/rest/puco/' + nroDocumento,
+            method: 'GET', // do GET,
+            rejectUnauthorized: false
         };
         // Realizar GET request
         return new Promise((resolve, reject) => {
             var reqGet = https.request(optionsgetmsg, function(res) {
-                console.log("statusCode: ", res.statusCode);
                 res.on('data', function(d) {
                     //console.info('GET de Sisa ' + nroDocumento + ':\n');
                     if (d.toString())
-                        jsonData = jsonData + d.toString();
+                        xml = xml + d.toString();
                 });
+
                 res.on('end', function() {
-                    if (jsonData) {
-                        datosParseados = parser.toJson(jsonData);
-                        resolve([res.statusCode, JSON.parse(datosParseados)])
-                    } //Se parsea el xml obtenido a JSON  JSON.parse(parser.toJson(jsonData))
+
+                    if (xml) {
+                        //Se parsea el xml obtenido a JSON
+                        to_json(xml, function(error, data) {
+                            if (error) {
+                                resolve([500, {}]);
+                            }
+                            else {
+                                console.log(data);
+                                resolve([res.statusCode, data])
+                            }
+                        });
+                    }
                     else
-                        resolve([res.statusCode, jsonData]); //JSON.parse(parser.toJson(jsonData))
+                        resolve([res.statusCode, {}]);
                 });
 
             });
@@ -99,7 +114,6 @@ export class servicioSisa {
         }
 
         //Ver el pais de la ubicación
-
         domicilio.ranking = 1;
         domicilio.activo = true;
         domicilio.ubicacion = ubicacion;
@@ -118,7 +132,7 @@ export class servicioSisa {
         }
         if (datosSisa.fechaNacimiento) {
             fecha = datosSisa.fechaNacimiento.split("-");
-            var fechaNac = new Date(fecha[2].substr(0, 4), fecha[1], fecha[0]);
+            var fechaNac = new Date(fecha[2].substr(0, 4), fecha[1] - 1, fecha[0]);
             ciudadano.fechaNacimiento = fechaNac.toJSON();
 
         }
