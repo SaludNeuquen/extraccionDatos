@@ -5,9 +5,18 @@ import { servicioMongo } from './servicioMongo';
 
 var servMongo = new servicioMongo();
 var servicio = new servicioHeller();
+/*
+servicio.obtenerDatosHeller(1, 1)
+   .then((resultado) => {
+       console.log(resultado);
+   })
+   .catch((err) => {
+       console.error('Error**:' + err)
+});
 
-
-servicio.obtenerDatosHeller(1, 50000)
+*/
+/*hasta 35000 ok */
+servicio.obtenerDatosHeller(/*1*/1,/*224202-166017*/35000)
     .then((resultado) => {
         if (resultado == null) {
             console.log('No encontrado');
@@ -17,7 +26,8 @@ servicio.obtenerDatosHeller(1, 50000)
             var PromPais = servMongo.obtenerPaises();
             var PromProvincia = servMongo.obtenerProvincias();
             var PromLocalidad = servMongo.obtenerLocalidades();
-
+          
+            
             Promise.all([PromPais, PromProvincia, PromLocalidad]).then(values => {
                 let paises;
                 paises = values[0]; //[{id:1, nombre:"Argentina" },{id:2, nombre:"Chile"},{id:3, nombre:"Brasil"}];
@@ -32,9 +42,10 @@ servicio.obtenerDatosHeller(1, 50000)
                     let pacienteHeller;
                     if (registro.NumeroDocumento.replace(/\"/g, "")) {
                         pacienteHeller = servicio.formatearDatosHeller(registro);
+                       // console.log('Direccion',pacienteHeller.direccion[0]);
                         //Se buscan las localidades y las provincias
                         var provincia = provincias.find((p) => { return libString.makePattern(pacienteHeller.direccion[0].ubicacion.provincia).test(p.nombre) });
-                        var localidad = localidades.find((p) => { return libString.getCleanedString(pacienteHeller.direccion[0].ubicacion.localidad) == (libString.getCleanedString(p.nombre)) });
+                        var localidad = localidades.find((p) => { return (libString.getCleanedString(pacienteHeller.direccion[0].ubicacion.localidad) == (libString.getCleanedString(p.nombre)) && (p.provincia.nombre == provincia.nombre)) });                        
                         if (provincia) {
                             pacienteHeller.direccion[0].ubicacion.provincia = { _id: provincia._id, id: provincia._id, nombre: provincia.nombre };
                         }
@@ -50,10 +61,12 @@ servicio.obtenerDatosHeller(1, 50000)
                         }
 
                         listaPacientesHeller.push(pacienteHeller);
-                        console.log("Paciente Heller", pacienteHeller);
+                        console.log("Paciente Heller",pacienteHeller);
+                  //       console.log("Paciente Heller",pacienteHeller.direccion[0].ubicacion.provincia);
                     }
                 })
                 console.log(listaPacientesHeller.length);
+           
                 if (listaPacientesHeller) {
                     console.log('Se guardan los pacientes de Heller');
                     servMongo.guardarPacientes(listaPacientesHeller, "pacienteHeller")
@@ -73,6 +86,7 @@ servicio.obtenerDatosHeller(1, 50000)
                         }))
 
                 }
+                
             })
 
 
@@ -81,4 +95,5 @@ servicio.obtenerDatosHeller(1, 50000)
     })
     .catch((err) => {
         console.error('Error**:' + err)
-    });
+    }
+    );
