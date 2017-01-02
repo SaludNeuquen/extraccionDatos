@@ -26,7 +26,7 @@ export class servicioHeller {
                     .input('fin', sql.VarChar(20), fin.toString())
                     .query(config.consultaPacienteHeller)
                     .then(function(recordset) {
-                        //console.dir(recordset);
+                        console.dir(recordset);
                         //console.log(recordset.length);
 
                         resolve(recordset);
@@ -55,41 +55,41 @@ export class servicioHeller {
         var contacto;
         var domicilio;
         var ubicacion;
-        //paciente["idPacienteHeller"] = registro.id;  //Ver el nuevo esquema
+        paciente["idPacienteHeller"] = registro.nroreg;  //Ver el nuevo esquema
 
         //Ver campos esDNI
         if (registro.NumeroDocumento.replace(/\"/g, "")) {
             paciente["documento"] = registro.NumeroDocumento.replace(/\"/g, "");
         }
-
-        if (paciente["activo"] == "1") {
+        /*Activo =1 activo en el sistema =0 baja Logica*/ 
+        //if (paciente["activo"] == "1") {
             paciente["activo"] = true;
-        }
+        /*}
         else {
             paciente["activo"] = false;
-        }
-
-        //Como no se encuentra un estado que identifique el estado del paciente no se
-        //carga el estado
+        }*/
 
 
         // estado : ["temporal", "identificado", "validado", "recienNacido", "extranjero"]
-        // switch (registro.idEstado) {
-        //     case 1:
-        //         paciente["estado"] = "recienNacido";
-        //         break;
-        //     case 2:
-        //         paciente["estado"] = "extranjero";
-        //         break;
-        //     default:
-        //         paciente["estado"] = "temporal";
-        //         break;
-        //
-        // }
-        paciente["nombre"] = registro.NOMBRES.replace(/\"/g, "");;
-        paciente["apellido"] = registro.APELLIDOS.replace(/\"/g, "");;
+        if(registro.NumeroDocumento>=88000000 && registro.NumeroDocumento<89000000 )
+        {
+            paciente["estado"] = "temporal";
+        }
+        else
+        {
+            if(registro.NumeroDocumento>=90000000 && registro.NumeroDocumento<94000000 ){
+                 paciente["estado"] = "extranjero";
+            }
+            else
+                {paciente["estado"] = "temporal";}
+        }
+        
 
-        paciente["contacto"] = [];
+
+      paciente["nombre"] = registro.NOMBRES.replace(/\"/g, "");
+      paciente["apellido"] = registro.APELLIDOS.replace(/\"/g, "");
+
+      paciente["contacto"] = [];
         var ranking = 0;
         if (registro.Telefono.replace(/\"/g, "")) {
             contacto = {};
@@ -108,6 +108,7 @@ export class servicioHeller {
             contacto.activo = true;
             paciente["contacto"].push(contacto);
         }
+        
 
         // contacto: [{
         //     tipo: {
@@ -126,15 +127,15 @@ export class servicioHeller {
         domicilio.valor = "";
 
         if (registro.Domicilio) {
-            domicilio.valor = registro.Domicilio.replace(/\"/g, "");;
+            domicilio.valor = registro.Domicilio.replace(/\"/g, "");
         }
 
         if (registro.Barrio) {
-            domicilio.valor = domicilio.valor.replace(/\"/g, "") + " Barrio: " + registro.Barrio.replace(/\"/g, "");;
+            domicilio.valor = domicilio.valor.replace(/\"/g, "") + " Barrio: " + registro.Barrio.replace(/\"/g, "");
         }
 
         if (registro.CodigoPostal)
-            domicilio.codigoPostal = registro.CodigoPostal.replace(/\"/g, "");;
+            domicilio.codigoPostal = registro.CodigoPostal.replace(/\"/g, "");
 
         domicilio.ubicacion = {};
         domicilio.ubicacion.localidad = "";
@@ -145,14 +146,14 @@ export class servicioHeller {
         if (registro.Provincia) {
             domicilio.ubicacion.provincia = libString.toTitleCase(registro.Provincia.replace(/\"/g, ""));
         }
-        domicilio.ubicacion.pais = "";
+        domicilio.ubicacion.pais = registro.Pais.replace(/\"/g, "");
 
         //domicilio.ubicacion = ubicacion;
         domicilio.ranking = 1;
         domicilio.activo = true;
         paciente["direccion"].push(domicilio);
 
-        switch (registro.Sexo.replace(/\"/g, "")) {
+      switch (registro.Sexo.replace(/\"/g, "")) {
             case "M":
                 paciente["sexo"] = "masculino";
                 paciente["genero"] = "masculino"; // identidad autopercibida
@@ -170,31 +171,42 @@ export class servicioHeller {
 
         paciente["fechaNacimiento"] = this.obtenerFecha(registro.FechaNacimiento);
 
-        //En las bases enviadas el 15/11/2016 los registros no poseen fecha de Fallecimiento
-        // if (registro.fallecido) {
-        //     if (registro.fallecidoFecha) {
-        //         paciente["fechaFallecimiento"] = new Date(registro.fallecidoFecha);
-        //     }
-        //
-        // }
+        if (registro.fallecidoFecha){
+            paciente["fechaFallecimiento"] = this.obtenerFecha(registro.fallecidoFecha);
+        }
+        else {
+             paciente["fechaFallecimiento"] = '';
+        };   
+       
+        paciente["Nacionalidad"] =  registro.Nacionalidad.replace(/\"/g, "");
 
         //["casado", "separado", "divorciado", "viudo", "soltero", "otro", ""]
-        switch (registro.Ecivil.replace(/\"/g, "")) {
-            case "CASADO":
+       switch (registro.Ecivil.replace(/\"/g, "")) {
+            case "Casado":
                 paciente["estadoCivil"] = "casado";
                 break;
-            case "SOLTERO":
+            case "Soltero":
                 paciente["estadoCivil"] = "soltero";
                 break;
+            case "Concubino":
+                paciente["estadoCivil"] = "Concubino";
+                break;
+            case "Divorciado":
+                paciente["estadoCivil"] = "Divorciado";
+                break;
+            case "Viudo":
+                paciente["estadoCivil"] = "Viudo";
+                break;    
             default:
                 paciente["estadoCivil"] = "otro";
                 break;
         }
-
+        
+/* No se verifica descartar
         if (registro.verificadoISSN && registro.verificadoISSN.replace(/\"/g, "") != "0") {
             paciente["entidadesValidadoras"] = "verificadoISSN";
         }
-
+*/
 
         return paciente;
 
