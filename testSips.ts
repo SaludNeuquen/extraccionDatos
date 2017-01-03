@@ -7,7 +7,7 @@ var servicio = new servicioSips();
 var servMongo = new servicioMongo();
 //console.log(libString.obtenerConsonante('Roa', 3));
 
-servicio.obtenerDatosips(600001,800000)
+servicio.obtenerDatosips(1400001,1500000)
     .then((resultado) => {
         if (resultado == null) {
             console.log('No encontrado');
@@ -72,13 +72,12 @@ servicio.obtenerDatosips(600001,800000)
 
                 obtenerPacientes
                     .then((lista => {
-                        servMongo.guardarPacientes(lista,"pacienteSips")
+                        servMongo.guardarPacientes(lista,"paciente")
                        .then((res => {
                            //console.log('Guardar Paciente', paciente["idPaciente"]);
                            console.log('Guardar Pacientes');
                        }))
                        .catch((err => {
-
                            console.log('Error al guardar Pacientes', err)
 
                            // servMongo.guardarLog({ "idPacienteSips": pacientesSips['idPaciente'], "Error": err.toString(), "Fecha": Date.now() })

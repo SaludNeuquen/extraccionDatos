@@ -25,7 +25,7 @@ export class servicioSips {
                 new sql.Request()
                     .input('inicio', sql.VarChar(20), inicio.toString())
                     .input('fin', sql.VarChar(20), fin.toString())
-                    .query(config.consultaPaciente).then(function(recordset) {
+                    .query(config.consultaPacCluster).then(function(recordset) {
                         //console.dir(recordset);
                         //console.log(recordset.length);
                         resolve([recordset]);
@@ -55,6 +55,12 @@ export class servicioSips {
         var ubicacion;
         paciente["idPaciente"] = registroSips.idPaciente;
         paciente["documento"] = registroSips.numeroDocumento.toString();
+        if(registroSips.cluster_id)
+        {
+            paciente["clusterId"] = registroSips.cluster_id;
+        }else{
+            paciente["clusterId"] = "";
+        }
 
         switch (registroSips.idMotivoNI) {
             case 1:
