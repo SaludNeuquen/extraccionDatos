@@ -18,6 +18,7 @@ servicio.obtenerDatosHeller(/*1*/1,/*224202-166017*/35000)
             lista.forEach(registro => {
                 let pacienteHeller;
                 if (registro.NumeroDocumento.replace(/\"/g, "")) {
+                    pacienteHeller = servicio.formatearDatosHeller(registro);
                     listaPacientesHeller.push(pacienteHeller);
                 }
             })
