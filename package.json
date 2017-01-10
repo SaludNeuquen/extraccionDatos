@@ -5,6 +5,7 @@
   "main": "testSips.js",
   "dependencies": {
     "jsdoc": "^3.4.0",
+    "jsonfile": "^2.4.0",
     "mongodb": "^2.2.11",
     "mssql": "^3.3.0",
     "request": "^2.78.0",

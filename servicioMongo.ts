@@ -5,8 +5,8 @@ import {libString} from './libString';
 
 export class servicioMongo {
 
-    getPacientes() {
-        var url = config.urlMigraSips;
+    getPacientes(url, coleccion) {
+
         //var url = 'mongodb://localhost:27017/andes';
         return new Promise((resolve, reject) => {
             mongodb.MongoClient.connect(url, function(err, db) {
@@ -24,7 +24,7 @@ export class servicioMongo {
                     "estadoCivil": 1,
                     "claveSN": 1
                 }
-                db.collection("paciente").find({
+                db.collection(coleccion).find({
                     idPaciente: 1
                 }, projection).toArray(function(err, items) {
                     if (err)
@@ -126,15 +126,15 @@ export class servicioMongo {
 
     }
 
-    obtenerPacientes(condicion) {
-        var url = config.urlMigraSips;
+    obtenerPacientes(condicion, coleccion) {
+        var url = config.urlMigracion;
         console.log('URL', url, condicion);
         //var url = 'mongodb://localhost:27017/andes';
         return new Promise((resolve, reject) => {
             mongodb.MongoClient.connect(url, function(err, db) {
-                db.collection("paciente").find({
-                    "claveSN": condicion
-                }).toArray(function(err, items) {
+                db.collection(coleccion).find(
+                    condicion
+                ).toArray(function(err, items) {
                     if (err) {
                         console.log('Error obtenerPacientes', err);
                         reject(err);
@@ -246,27 +246,28 @@ export class servicioMongo {
                         } else {
                             resolve(item);
                         }
+                        db.close();
 
                     });
                 });
-                db.close();
+
             });
 
         });
     }
 
 
-    cargaPaciente(paciente) {
+    cargaPaciente(paciente, coleccion) {
         var url = config.urlMigraSips;
         return new Promise((resolve, reject) => {
             mongodb.MongoClient.connect(url, function(err, db) {
-                db.collection("paciente").insertOne(paciente, function(err, item) {
+                db.collection(coleccion).insertOne(paciente, function(err, item) {
                     if (err) {
                         reject(err);
                     } else {
                         resolve(item);
-                        db.close();
                     }
+                    db.close();
 
                 });
 
@@ -295,7 +296,7 @@ export class servicioMongo {
         });
     }
 
-    guardarLog(coleccion: string,log) {
+    guardarLog(coleccion: string, log) {
         var url = config.urlMigracion;
         return new Promise((resolve, reject) => {
             mongodb.MongoClient.connect(url, function(err, db) {
@@ -329,6 +330,38 @@ export class servicioMongo {
 
                 db.close();
             });
+
+        });
+    }
+
+    actualizarDirecciones(coleccion, listaPacientes) {
+
+        var url = config.urlMigracion;
+        return new Promise((resolve, reject) => {
+            mongodb.MongoClient.connect(url, function(err, db) {
+
+                listaPacientes.forEach(function(pac) {
+
+                    let ObjectID = mongodb.ObjectID;
+                    let id = new ObjectID(pac._id);
+
+                    db.collection(coleccion).findOneAndUpdate(
+                        { "_id": id },
+                        { $set: { "direccion": pac.direccion } }, function(err, result) {
+                            if (err) {
+                                console.log('Error', err)
+                                reject(err);
+                            }
+                            else {
+                                resolve('OK');
+                                db.close();
+                            }
+
+                        }
+                    )
+                });
+
+            })
 
         });
     }
@@ -375,6 +408,99 @@ export class servicioMongo {
 
         });
     }
+
+
+    actualizarOrganizacion() {
+
+        var url = config.urlMongoAndes;
+        return new Promise((resolve, reject) => {
+            mongodb.MongoClient.connect(url, function(err, db) {
+                db.collection("organizacion").find({
+                }).toArray(function(err, organizaciones) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        organizaciones.forEach(function(org) {
+                            //loc.departamento = libString.toTitleCase(loc.departamento);
+                            var ObjectID = mongodb.ObjectID;
+                            var idOrg = new ObjectID(org._id);
+                            if (org.tipoEstablecimiento) {
+                                if (org.tipoEstablecimiento.id) {
+
+                                    let tipo = new ObjectID(org.tipoEstablecimiento.id);
+
+                                    console.log(org);
+                                    db.collection("organizacion").findOneAndUpdate(
+                                        { "_id": idOrg },
+                                        { $set: { "tipoEstablecimiento": tipo } }, function(err, result) {
+                                            if (err) {
+                                                console.log('Error', err)
+                                                reject(err);
+                                            }
+                                            else {
+                                                console.log('UPDATE', result);
+                                                resolve('OK1');
+                                            }
+
+                                        }
+                                    )
+                                    resolve('OK2');
+                                }
+                            }
+
+                        });
+
+                    }
+                    db.close();
+                });
+
+                //db.close();
+            });
+
+        });
+    }
+
+    actualizarPacientes(coleccion, entidad) {
+
+        var url = config.urlMigracion;
+        return new Promise((resolve, reject) => {
+            mongodb.MongoClient.connect(url, function(err, db) {
+                db.collection(coleccion).find({
+                }).toArray(function(err, lista) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        lista.forEach(function(elem) {
+                            //loc.departamento = libString.toTitleCase(loc.departamento);
+                            var ObjectID = mongodb.ObjectID;
+                            var idElem = new ObjectID(elem._id);
+                            console.log('ID', idElem);
+                            db.collection(coleccion).findOneAndUpdate(
+                                { "_id": idElem },
+                                { $set: { "identificadores":[{"entidad": entidad, "valor": elem.idPaciente}] } }, function(err, result) {
+                                    if (err) {
+                                        console.log('Error', err)
+                                        reject(err);
+                                    }
+                                    else {
+                                        console.log('UPDATE', result);
+                                        resolve('OK1');
+                                    }
+
+                                }
+                            )
+                        });
+                        resolve('OK2');
+                    }
+                    db.close();
+                });
+
+                //db.close();
+            });
+
+        });
+    }
+
 
 
 

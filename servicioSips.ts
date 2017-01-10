@@ -6,41 +6,6 @@ import {libString} from './libString'
 
 export class servicioSips {
 
-    obtenerDatosips(inicio: number, fin: number) {
-
-        return new Promise((resolve, reject) => {
-
-            var connection = {
-                user: config.user,
-                password: config.password,
-                server: config.serverSql,
-                database: config.databaseSql,
-                //connectionTimeout: config.connectionTimeout,
-                requestTimeout: config.requestTimeout
-
-            };
-
-            sql.connect(connection).then(function() {
-                // Puede ser una consulta a una vista que tenga toda la información
-                new sql.Request()
-                    .input('inicio', sql.VarChar(20), inicio.toString())
-                    .input('fin', sql.VarChar(20), fin.toString())
-                    .query(config.consultaPacCluster).then(function(recordset) {
-                        //console.dir(recordset);
-                        //console.log(recordset.length);
-                        resolve([recordset]);
-
-                    }).catch(function(err) {
-                        // ... query error checks
-                        console.log("Error de conexión");
-                        reject(err);
-                    });
-
-            })
-        })
-
-    }
-
     obtenerFecha(fechaStr) {
         var numbers = fechaStr.match(/\d+/g);
         var date = new Date(numbers[2], numbers[1] - 1, numbers[0]);
@@ -54,11 +19,12 @@ export class servicioSips {
         var domicilio;
         var ubicacion;
         paciente["idPaciente"] = registroSips.idPaciente;
+        paciente["identificadores"] =[{entidad: "SIPS", valor:registroSips.idPaciente.toString()}];
+
         paciente["documento"] = registroSips.numeroDocumento.toString();
-        if(registroSips.cluster_id)
-        {
+        if (registroSips.cluster_id) {
             paciente["clusterId"] = registroSips.cluster_id;
-        }else{
+        } else {
             paciente["clusterId"] = "";
         }
 
@@ -241,8 +207,6 @@ export class servicioSips {
         if (paciente["documento"]) {
             doc = paciente["documento"].substr(0, 4);
         }
-
-
         var clave = libString.obtenerConsonante(paciente.apellido, 3) + libString.obtenerConsonante(paciente.nombre, 2) +
             anioNacimiento + doc;
 

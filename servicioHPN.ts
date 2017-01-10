@@ -6,78 +6,6 @@ import {libString} from './libString'
 export class servicioHPN {
 
 
-    obtenerDatosHPN(inicio: number, fin: number) {
-
-        var connection = {
-            user: config.user,
-            password: config.password,
-            server: config.serverSql2,
-            database: config.dbMigracion,
-            //connectionTimeout: config.connectionTimeout,
-            requestTimeout: config.requestTimeout
-        };
-
-        return new Promise((resolve, reject) => {
-
-            sql.connect(connection).then(function() {
-                // Es una consulta a una vista que tiene toda la información
-                new sql.Request()
-                    .input('inicio', sql.VarChar(20), inicio.toString())
-                    .input('fin', sql.VarChar(20), fin.toString())
-                    .query(config.consultaPacienteHC)
-                    .then(function(recordset) {
-                        resolve(recordset);
-
-                    })
-                    .catch(function(err) {
-                        // ... query error checks
-                        console.log("Error de conexión al server", config.serverSql2);
-                        reject(err);
-                    });
-
-            })
-        })
-
-    }
-
-    obtenerPacientesHPN() {
-
-        var connection = {
-            user: config.user,
-            password: config.password,
-            server: config.serverSql2,
-            database: config.dbMigracion,
-            //connectionTimeout: config.connectionTimeout,
-            requestTimeout: config.requestTimeout
-        };
-
-        return new Promise((resolve, reject) => {
-
-            var consulta = "SELECT * FROM PacientesHPN WHERE legacy_idHistoriaClinica is null ";
-
-            //var consulta = "SELECT COUNT(id), idPaciente FROM Pacientes_Domicilios GROUP BY idPaciente HAVING COUNT(Id) > 1";
-
-            sql.connect(connection).then(function() {
-                // Es una consulta a una vista que tiene toda la información
-                new sql.Request()
-                    //.input('inicio', sql.VarChar(20), inicio.toString())
-                    //.input('fin',sql.VarChar(20), fin.toString())
-                    .query(consulta)
-                    .then(function(recordset) {
-                        resolve(recordset);
-
-                    })
-                    .catch(function(err) {
-                        // ... query error checks
-                        console.log("Error de conexión al server", config.serverSql);
-                        reject(err);
-                    });
-
-            })
-        })
-
-    }
-
     formatearContacto(registro) {
         var contacto;
         contacto = {};
@@ -119,8 +47,8 @@ export class servicioHPN {
             }
 
             contacto["ranking"] = 1;
-            if (registro.audit_datetime){
-              contacto["ultimaActualizacion"] = new Date(registro.audit_datetime);
+            if (registro.audit_datetime) {
+                contacto["ultimaActualizacion"] = new Date(registro.audit_datetime);
             }
 
             if (registro.activo != null) {
@@ -252,13 +180,16 @@ export class servicioHPN {
 
 
         if (registro.Codigo) {
+            paciente["identificadores"] =[{entidad: "HPN", valor:registro.Codigo.toString()}];
             paciente["idPacienteHPN"] = registro.Codigo;  //Ver el nuevo esquema
+
             //Ver campos esDNI
             paciente["documento"] = registro.HC_Documento;
             paciente["nombre"] = registro.HC_Nombre;
             paciente["apellido"] = registro.HC_Apellido;
         }
         else {
+            paciente["identificadores"] =[{entidad: "HPN", valor:registro.id.toString()}];
             paciente["idPacienteHPN"] = registro.id;  //Ver el nuevo esquema
             //Ver campos esDNI
             paciente["documento"] = registro.documento;
