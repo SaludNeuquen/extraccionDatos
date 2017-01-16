@@ -6,8 +6,6 @@ var impDatos = new importarDatos();
 
 var efector = "SIPS";
 var rutaArchivo='/media/nhuenchuman/Datos/pacientes.json';
-var inicio = 1;
-var fin = 1500000;
 var usuario = config.user;
 var pass = config.password;
 var server;
@@ -36,13 +34,13 @@ switch (efector) {
 
 //Se importan los datos desde SQL a un archivo json,
 //Luego con mongoimport se pueden insertar los datos a la bd de Mongo
-impDatos.importarRegistros(efector, inicio, fin, usuario, pass,
+impDatos.importarRegistros(efector, usuario, pass,
     server, db, consulta,  rutaArchivo)
     .then((resultado) => {
         if (resultado == null) {
             console.log('No encontrado');
         } else {
-            console.log('Se importaron los datos a la coleccion');
+            console.log('Se importaron los datos al archivo');
         }
     })
 

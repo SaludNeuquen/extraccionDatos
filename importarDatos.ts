@@ -16,12 +16,12 @@ export class importarDatos {
     //servicio.obtenerDatosSql(1, 1500000, config.user, config.password,
     //     config.serverSql, config.databaseSql, config.consultaPaciente)
 
-    importarRegistros(efector, inicio, fin, usuario, password, server, db, consulta, archivo) {
+    importarRegistros(efector, usuario, password, server, db, consulta, archivo) {
         var servicio = new servicioMssql();
         var file = fs.createWriteStream(archivo);
         return new Promise((resolve, reject) => {
 
-            servicio.obtenerDatosSql(inicio, fin, usuario, password, server, db, consulta)
+            servicio.obtenerDatosSql2(usuario, password, server, db, consulta)
                 .then((resultado) => {
                     if (resultado == null) {
                         console.log('No encontrado');
