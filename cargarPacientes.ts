@@ -1,23 +1,18 @@
 import {postPaciente} from './postPaciente';
 import { servicioMongo } from './servicioMongo';
+import * as config from './config';
 
 
 var servicio = new postPaciente();
 var servMongo = new servicioMongo();
 
-servMongo.getPacientes().then((resultado) => {
+var url = config.urlMongoAndes;
+var coleccion= "paciente";
+
+
+servMongo.getPacientes(url, coleccion).then((resultado) => {
     var listaPacientes;
     listaPacientes = resultado;
-    // listaPacientes.forEach(pac => {
-    //     servicio.cargarUnPacienteAndes(pac)
-    //     .then((rta) => {
-    //         console.log(rta,"fiinnnnn");
-    //     })
-    //     .catch((err) => {
-    //         console.error('Error**:' + err)
-    //     });
-    // });
-    console.log(resultado[0]);
     var paciente;
     paciente = resultado[0];
     servicio.cargarUnPacienteAndes(paciente)

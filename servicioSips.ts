@@ -19,7 +19,7 @@ export class servicioSips {
         var domicilio;
         var ubicacion;
         paciente["idPaciente"] = registroSips.idPaciente;
-        paciente["identificadores"] =[{entidad: "SIPS", valor:registroSips.idPaciente.toString()}];
+        paciente["identificadores"] = [{ "entidad": "SIPS", "valor": registroSips.idPaciente.toString() }];
 
         paciente["documento"] = registroSips.numeroDocumento.toString();
         if (registroSips.cluster_id) {
@@ -121,17 +121,17 @@ export class servicioSips {
             domicilio.codigoPostal = registroSips.codigoPostal.trim();
 
         domicilio.ubicacion = {};
-        domicilio.ubicacion.localidad = "";
+        domicilio.ubicacion.localidad = {};
         if (registroSips.idLocalidad >= 3) {
-            domicilio.ubicacion.localidad = libString.toTitleCase(registroSips.nombreLocalidad.trim());
+            domicilio.ubicacion.localidad.nombre = libString.toTitleCase(registroSips.nombreLocalidad.trim());
         }
-        domicilio.ubicacion.provincia = "";
+        domicilio.ubicacion.provincia = {};
         if (registroSips.idProvinciaDomicilio >= 1) {
-            domicilio.ubicacion.provincia = libString.toTitleCase(registroSips.nombreProvincia.trim());
+            domicilio.ubicacion.provincia.nombre = libString.toTitleCase(registroSips.nombreProvincia.trim());
         }
-        domicilio.ubicacion.pais = "";
+        domicilio.ubicacion.pais = {};
         if (registroSips.idProvinciaDomicilio >= 1) {
-            domicilio.ubicacion.pais = libString.toTitleCase(registroSips.nombrePais.trim());
+            domicilio.ubicacion.pais.nombre = libString.toTitleCase(registroSips.nombrePais.trim());
         }
 
         //domicilio.ubicacion = ubicacion;
@@ -194,8 +194,27 @@ export class servicioSips {
 
     }
 
-    crearClaveSN(paciente) {
+    actualizarRelaciones(listaRelaciones) {
 
+        var relaciones = [];
+        var lista = [];
+
+        //Se recorre la listaPacientes y se actualiza la relación de parentesco
+        listaRelaciones.forEach(rel => {
+            let relaciones = [];
+            let relacion = {
+                "relacion": rel.TipoParentesco.toLowerCase(),
+                "nombre": rel.NombreRel,
+                "apellido": rel.ApellidoRel,
+                "documento": rel.DocumentoRel
+            }
+            relaciones.push(relacion);
+            lista.push([{ "idPaciente": rel.idPaciente }, { "relaciones": relaciones }]);
+        })
+        return lista;
+    }
+
+    crearClaveSN(paciente) {
         var fecha;
         var anioNacimiento = "1900";
         var doc = "";

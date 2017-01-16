@@ -334,6 +334,31 @@ export class servicioMongo {
         });
     }
 
+    actualizarDatos(coleccion, lista) {
+        var url = config.urlMigracion;
+        return new Promise((resolve, reject) => {
+            mongodb.MongoClient.connect(url, function(err, db) {
+                lista.forEach(function(elem) {
+                    db.collection(coleccion).findOneAndUpdate(
+                        elem[0],
+                        { $set: elem[1] }, function(err, result) {
+                            if (err) {
+                                console.log('Error', err)
+                                reject(err);
+                            }
+                            else {
+                                resolve('OK');
+                                db.close();
+                            }
+                        }
+                    )
+                });
+
+            })
+
+        });
+    }
+
     actualizarDirecciones(coleccion, listaPacientes) {
 
         var url = config.urlMigracion;
@@ -356,7 +381,6 @@ export class servicioMongo {
                                 resolve('OK');
                                 db.close();
                             }
-
                         }
                     )
                 });
@@ -477,7 +501,7 @@ export class servicioMongo {
                             console.log('ID', idElem);
                             db.collection(coleccion).findOneAndUpdate(
                                 { "_id": idElem },
-                                { $set: { "identificadores":[{"entidad": entidad, "valor": elem.idPaciente}] } }, function(err, result) {
+                                { $set: { "identificadores": [{ "entidad": entidad, "valor": elem.idPaciente }] } }, function(err, result) {
                                     if (err) {
                                         console.log('Error', err)
                                         reject(err);

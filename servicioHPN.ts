@@ -113,13 +113,13 @@ export class servicioHPN {
             }
 
 
-            domicilio["ubicacion"].localidad = "";
+            domicilio["ubicacion"].localidad = {};
             if (registro.Loc_Codigo) {
-                domicilio["ubicacion"].localidad = libString.toTitleCase(registro.Loc_Nombre);
+                domicilio["ubicacion"].localidad.nombre = libString.toTitleCase(registro.Loc_Nombre);
             }
-            domicilio["ubicacion"].provincia = "";
+            domicilio["ubicacion"].provincia = {};
             if (registro.Prov_Codigo) {
-                domicilio["ubicacion"].provincia = libString.toTitleCase(registro.Prov_Nombre.trim());
+                domicilio["ubicacion"].provincia.nombre = libString.toTitleCase(registro.Prov_Nombre.trim());
             }
 
 
@@ -150,7 +150,8 @@ export class servicioHPN {
         }
 
         if (domicilio["valor"] != "") {
-            domicilio["ubicacion"].pais = "";
+            domicilio["ubicacion"].pais = {};
+            domicilio["ubicacion"].pais.nombre = "";
             // if (registro.idProvinciaDomicilio){
             //   domicilio.ubicacion.pais = libString.toTitleCase(registroSips.nombrePais.trim());
             // }
