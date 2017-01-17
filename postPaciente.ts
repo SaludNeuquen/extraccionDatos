@@ -48,15 +48,16 @@ export class postPaciente {
 
 
     cargarUnPacienteAndes(paciente: any) {
-        console.log("Entro");
+
         return new Promise((resolve, reject) => {
             if (paciente.fechaNacimiento) {
                 var fecha = paciente.fechaNacimiento.split("-");
                 paciente.fechaNacimiento = fecha[2].substr(0, 2) + "/" + fecha[1].toString() + "/" + fecha[0].toString();
             }
-            console.log("pacientes", paciente);
+
             var options = {
-                host: 'localhost',
+                //host: 'localhost',
+                host:'10.1.62.17',
                 port: 3002,
                 path: '/api/paciente',
                 method: 'POST',
@@ -74,7 +75,7 @@ export class postPaciente {
                 });
             });
             req.on('error', function(e) {
-                console.log('problem with request: ' + e.message + " ----- ");
+                console.log('Problemas API : ' + e.message + " ----- ", e);
                 reject(e.message);
             });
             // write data to request body

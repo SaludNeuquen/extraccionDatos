@@ -77,6 +77,7 @@ export class servicioMssql {
             //connectionTimeout: config.connectionTimeout,
             requestTimeout: 190000,
             stream: true,
+          //  applicationIntent: 'readOnly'
         };
         var listaRegistros = [];
         console.log("Conexion", connection);
