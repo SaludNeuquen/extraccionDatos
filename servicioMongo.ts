@@ -316,10 +316,10 @@ export class servicioMongo {
     }
 
     guardarLogSips(log) {
-        var url = config.urlMigraSips;
+        var url = config.urlMongoAndes;
         return new Promise((resolve, reject) => {
             mongodb.MongoClient.connect(url, function(err, db) {
-                db.collection("logSips").insertOne(log, function(err, item) {
+                db.collection("logPaciente").insertOne(log, function(err, item) {
                     if (err) {
                         reject(err);
                     } else {
