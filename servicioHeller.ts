@@ -69,7 +69,7 @@ export class servicioHeller {
         var domicilio;
         var ubicacion;
         //paciente["idPacienteHeller"] = registro.nroreg;  //Ver el nuevo esquema
-        paciente["identificadores"] =[{entidad: "Heller", valor:registro.nroreg.toString()}];
+        paciente["identificadores"] =[{"entidad": "Heller", "valor":registro.nroreg.toString()}];
         try {
             //Ver campos esDNI
             //if (registro.NumeroDocumento.replace(/\"/g, "")) throw "nroDocumento";
@@ -148,14 +148,15 @@ export class servicioHeller {
                     domicilio.codigoPostal = registro.CodigoPostal.replace(/\"/g, "");
 
                 domicilio.ubicacion = {};
-                domicilio.ubicacion.localidad = "";
+                domicilio.ubicacion.localidad = {};
                 if (registro.Localidad)
-                    domicilio.ubicacion.localidad = libString.toTitleCase(registro.Localidad.replace(/\"/g, ""));
-                domicilio.ubicacion.provincia = "";
+                    domicilio.ubicacion.localidad.nombre = libString.toTitleCase(registro.Localidad.replace(/\"/g, ""));
+                domicilio.ubicacion.provincia = {};
                 if (registro.Provincia) {
-                    domicilio.ubicacion.provincia = libString.toTitleCase(registro.Provincia.replace(/\"/g, ""));
+                    domicilio.ubicacion.provincia.nombre = libString.toTitleCase(registro.Provincia.replace(/\"/g, ""));
                 }
-                domicilio.ubicacion.pais = registro.Pais.replace(/\"/g, "");
+                domicilio.ubicacion.pais = {};
+                domicilio.ubicacion.pais.nombre = registro.Pais.replace(/\"/g, "");
 
                 //domicilio.ubicacion = ubicacion;
                 domicilio.ranking = 1;
